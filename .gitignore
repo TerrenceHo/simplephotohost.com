@@ -1,0 +1,10 @@
+# object files, static/dynamic libraries
+*.o
+*.a
+*.so
+
+#Folders to ignore
+_test
+_obj
+
+
