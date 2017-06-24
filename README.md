@@ -1,3 +1,3 @@
 # Lens Locked
 
-An awesome photo gallery application written in Go!
+Awesome Gallery Application written in Go!
