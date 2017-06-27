@@ -1,16 +1,32 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"lenslocked.com/controllers"
+	"lenslocked.com/models"
 
 	"github.com/gorilla/mux"
 )
 
+const (
+	host   = "localhost"
+	port   = 5432
+	user   = "kho"
+	dbname = "lenslocked_dev"
+)
+
 func main() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	us, err := models.NewUserService(psqlInfo)
+	must(err)
+	defer us.Close()
+	us.AutoMigrate()
+
 	staticC := controllers.NewStatic()
-	usersC := controllers.NewUsers()
+	usersC := controllers.NewUsers(us)
 	galleryC := controllers.NewGallery()
 
 	r := mux.NewRouter()
