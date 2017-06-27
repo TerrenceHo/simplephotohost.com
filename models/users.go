@@ -67,11 +67,11 @@ func first(db *gorm.DB, dst interface{}) error {
 // Create the provided user and backfill data
 // like the ID, CreatedAt, nd UpdateAt field
 func (us *UserService) Create(user *User) error {
-	hashedBtes, err := bcrypt.GenerateFromPassword(password, cost), bcrypt.DefaultCost
+	hashedBytes, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
-	user.PasswordHash = string(hashedBtes)
+	user.PasswordHash = string(hashedBytes)
 	user.Password = ""
 	return us.db.Create(user).Error
 }
