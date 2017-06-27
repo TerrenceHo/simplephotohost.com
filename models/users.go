@@ -18,6 +18,8 @@ var (
 	ErrInvalidID = errors.New("models: ID provided not found")
 )
 
+const userPwPepper = "$2a$06yxCG8px5KYNhqK/ZgBxHKuK7bIZ3q1X3qL6oKUyQc6Bk9kUoKabsK"
+
 func NewUserService(connectionInfo string) (*UserService, error) {
 	db, err := gorm.Open("postgres", connectionInfo)
 	if err != nil {
@@ -67,7 +69,8 @@ func first(db *gorm.DB, dst interface{}) error {
 // Create the provided user and backfill data
 // like the ID, CreatedAt, nd UpdateAt field
 func (us *UserService) Create(user *User) error {
-	hashedBytes, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	pwBytes := []byte(user.Password + userPwPepper) // converting to byte slice
+	hashedBytes, err := bcrypt.GenerateFromPassword(pwBytes, bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
