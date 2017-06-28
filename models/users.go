@@ -59,7 +59,12 @@ func (us *UserService) ByEmail(email string) (*User, error) {
 }
 
 // Autheticate is used to autheticate a user based on the provided email and
-// password.  If a user does not exist with that combination
+// password.
+// If the email address is invalid, this will return nil, ErrNotFound
+// If the password provided is not correct, this will return nil,
+// ErrInvalidPassword
+// If both are valid, it will return user, nil
+// If this is some other error, like networking, return nil, err
 func (us *UserService) Authenticate(email, password string) (*User, error) {
 	foundUser, err := us.ByEmail(email)
 	if err != nil {
