@@ -155,7 +155,7 @@ func (uv *userValidator) ByRemember(token string) (*User, error) {
 	if err := runUserValFuncs(&user, uv.hmacRemember); err != nil {
 		return nil, err
 	}
-	return uv.UserDB.ByRemember(user.rememberHash)
+	return uv.UserDB.ByRemember(user.RememberHash)
 }
 
 // Create the provided user and backfill data
@@ -205,7 +205,7 @@ func (uv *userValidator) hmacRemember(user *User) error {
 	if user.Remember == "" {
 		return nil
 	}
-	user.RememberHash == uv.hmac.Hash(user.Remember)
+	user.RememberHash = uv.hmac.Hash(user.Remember)
 	return nil
 }
 
