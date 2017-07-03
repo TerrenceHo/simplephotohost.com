@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"regexp"
 	"strings"
 
 	"lenslocked.com/hash"
@@ -23,6 +24,18 @@ var (
 
 	// ErrInvalidPassword is returned when an invalid password is provided
 	ErrInvalidPassword = errors.New("models: Invalid Password provided")
+
+	//  Err EmailRequired is returned when an email address is not provided when
+	//  creating a user
+	ErrEmailRequired = errors.New("models: Email address is required")
+
+	// ErrEmailInvalid is returned when an email address provided does not match
+	// out requirements in EmailRegex
+	ErrEmailInvalid = errors.New("models: Email address is not valid")
+
+	// ErrEmailTaken is returned when an update or create is attempted with an
+	// email address that is already in use
+	ErrEmailTaken = errors.New("models: email address is already taken")
 )
 
 const userPwPepper = "$2a$06yxCG8px5KYNhqK/ZgBxHKuK7bIZ3q1X3qL6oKUyQc6Bk9kUoKabsK"
@@ -88,10 +101,7 @@ func NewUserService(connectionInfo string) (UserService, error) {
 		return nil, err
 	}
 	hmac := hash.NewHMAC(hmacSecretKey)
-	uv := &userValidator{
-		hmac:   hmac,
-		UserDB: ug,
-	}
+	uv := newUserValidator(ug, hmac)
 	return &userService{
 		UserDB: uv,
 	}, nil
@@ -142,9 +152,18 @@ func runUserValFuncs(user *User, fns ...userValFunc) error {
 
 var _ UserDB = &userValidator{}
 
+func newUserValidator(udb UserDB, hmac hash.HMAC) *userValidator {
+	return &userValidator{
+		UserDB:     udb,
+		hmac:       hmac,
+		emailRegex: regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,16}$`),
+	}
+}
+
 type userValidator struct {
 	UserDB
-	hmac hash.HMAC
+	hmac       hash.HMAC
+	emailRegex *regexp.Regexp
 }
 
 // ByEmail will normalize the email address before calling the ByEmailon the
@@ -177,7 +196,10 @@ func (uv *userValidator) Create(user *User) error {
 	err := runUserValFuncs(user, uv.bcryptPassword,
 		uv.setRememberIfUnset,
 		uv.hmacRemember,
-		uv.normalizeEmail)
+		uv.normalizeEmail,
+		uv.requireEmail,
+		uv.emailFormat,
+		uv.emailIsAvail)
 	if err != nil {
 		return err
 	}
@@ -189,7 +211,10 @@ func (uv *userValidator) Update(user *User) error {
 	err := runUserValFuncs(user,
 		uv.bcryptPassword,
 		uv.hmacRemember,
-		uv.normalizeEmail)
+		uv.normalizeEmail,
+		uv.requireEmail,
+		uv.emailFormat,
+		uv.emailIsAvail)
 	if err != nil {
 		return err
 	}
@@ -256,6 +281,39 @@ func (uv *userValidator) idGreaterThan(n uint) userValFunc {
 func (uv *userValidator) normalizeEmail(user *User) error {
 	user.Email = strings.ToLower(user.Email)
 	user.Email = strings.TrimSpace(user.Email)
+	return nil
+}
+
+func (uv *userValidator) requireEmail(user *User) error {
+	if user.Email == "" {
+		return ErrEmailRequired
+	}
+	return nil
+}
+
+func (uv *userValidator) emailFormat(user *User) error {
+	if !uv.emailRegex.MatchString(user.Email) {
+		return ErrEmailInvalid
+	}
+	return nil
+}
+
+func (uv *userValidator) emailIsAvail(user *User) error {
+	existing, err := uv.ByEmail(user.Email)
+	if err == ErrNotFound {
+		// Email address is not taken
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+
+	// We found a user w/ this email address...
+	// If the found user has the same ID as this user, it is an update and this
+	// is the same user
+	if user.ID != existing.ID {
+		return ErrEmailTaken
+	}
 	return nil
 }
 
