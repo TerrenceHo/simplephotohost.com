@@ -27,14 +27,15 @@ type Users struct {
 	us        models.UserService
 }
 
-type Alert struct {
-	Level   string
-	Message string
-}
-
-// New is used to render the form where the user can create a new user account
-// GET /signup is path
+// New is used to render the form where a user can
+// create a new user account.
+//
+// GET /signup
 func (u *Users) New(w http.ResponseWriter, r *http.Request) {
+	type Alert struct {
+		Level   string
+		Message string
+	}
 	a := Alert{
 		Level:   "warning",
 		Message: "Successfully rendered a dynamic alert!",
@@ -50,7 +51,9 @@ type SignupForm struct {
 	Password string `schema:"password"`
 }
 
-// Create is used to process signup form when a user submits it
+// Create is used to process the signup form when a user
+// submits it. This is used to create a new user account.
+//
 // POST /signup
 func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
 	var form SignupForm
@@ -79,8 +82,9 @@ type LoginForm struct {
 	Password string `schema:"password"`
 }
 
-// Login is used to verify the provided email address and password and log user
-// in if they match
+// Login is used to verify the provided email address and
+// password and then log the user in if they are correct.
+//
 // POST /login
 func (u *Users) Login(w http.ResponseWriter, r *http.Request) {
 	form := LoginForm{}
@@ -92,16 +96,15 @@ func (u *Users) Login(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err {
 		case models.ErrNotFound:
-			fmt.Fprintln(w, "Invalid Email Address")
-		case models.ErrInvalidPassword:
-			fmt.Fprintln(w, "Invalid Password")
-		case nil:
-			fmt.Fprintln(w, user)
+			fmt.Fprintln(w, "Invalid email address.")
+		case models.ErrPasswordIncorrect:
+			fmt.Fprintln(w, "Invalid password provided.")
 		default:
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		return
 	}
+
 	err = u.signIn(w, user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -110,7 +113,7 @@ func (u *Users) Login(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/cookietest", http.StatusFound)
 }
 
-// Signin is used to sign users in via cookies
+// signIn is used to sign the given user in via cookies
 func (u *Users) signIn(w http.ResponseWriter, user *models.User) error {
 	if user.Remember == "" {
 		token, err := rand.RememberToken()
@@ -123,6 +126,7 @@ func (u *Users) signIn(w http.ResponseWriter, user *models.User) error {
 			return err
 		}
 	}
+
 	cookie := http.Cookie{
 		Name:     "remember_token",
 		Value:    user.Remember,
@@ -132,6 +136,7 @@ func (u *Users) signIn(w http.ResponseWriter, user *models.User) error {
 	return nil
 }
 
+// CookieTest is used to display cookies set on the current user
 func (u *Users) CookieTest(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("remember_token")
 	if err != nil {
