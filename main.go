@@ -22,8 +22,9 @@ func main() {
 		host, port, user, dbname)
 	services, err := models.NewServices(psqlInfo)
 	must(err)
-	// defer us.Close() //TODO
-	// us.AutoMigrate()
+	defer services.Close() //TODO
+	services.DestructiveReset()
+	services.AutoMigrate()
 
 	staticC := controllers.NewStatic()
 	usersC := controllers.NewUsers(services.User)
