@@ -1,20 +1,18 @@
 package controllers
 
 import (
-	"fmt"
-	"net/http"
+	"lenslocked.com/models"
+	"lenslocked.com/views"
 )
 
-func (g *Gallery) New(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Gallery")
-}
-
-type Gallery struct {
-	Photo string
-}
-
-func NewGallery() *Gallery {
-	return &Gallery{
-		Photo: "Hey",
+func NewGalleries(gs models.GalleryService) *Galleries {
+	return &Galleries{
+		New: views.NewView("bootstrap", "galleries/new"),
+		gs:  gs,
 	}
+}
+
+type Galleries struct {
+	New *views.View
+	gs  models.GalleryService
 }
