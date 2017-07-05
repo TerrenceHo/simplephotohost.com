@@ -1,7 +1,14 @@
 package models
 
-func NewServices(connectionInfo string) (*Services, error) {
+import "github.com/jinzhu/gorm"
 
+func NewServices(connectionInfo string) (*Services, error) {
+	db, err := gorm.Open("postgres", connectionInfo)
+	if err != nil {
+		return nil, err
+	}
+	db.Logmode(true)
+	return &Services{}, nil
 }
 
 type Services struct {
