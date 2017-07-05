@@ -9,7 +9,9 @@ type Gallery struct {
 	Title  string `gorm:"not null"`
 }
 
-type GalleryService interface{}
+type GalleryService interface {
+	GalleryDB
+}
 
 type GalleryDB interface {
 	Create(gallery *Gallery) error

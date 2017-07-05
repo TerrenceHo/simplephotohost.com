@@ -7,8 +7,10 @@ func NewServices(connectionInfo string) (*Services, error) {
 	if err != nil {
 		return nil, err
 	}
-	db.Logmode(true)
-	return &Services{}, nil
+	db.LogMode(true)
+	return &Services{
+		User: NewUserService(db),
+	}, nil
 }
 
 type Services struct {
