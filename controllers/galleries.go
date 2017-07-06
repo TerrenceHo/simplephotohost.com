@@ -37,6 +37,7 @@ func (g *Galleries) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	gallery := models.Gallery{
 		Title: form.Title,
+		// UserID: 1,
 	}
 	if err := g.gs.Create(&gallery); err != nil {
 		vd.SetAlert(err)
