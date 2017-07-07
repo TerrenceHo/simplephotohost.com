@@ -14,7 +14,7 @@
 {{end}}
 
 {{define "editGalleryForm"}}
-<form action="/galleries{{.ID}}/update" method="POST">
+<form action="/galleries/{{.ID}}/update" method="POST">
   <div class="form-group">
     <label for="title">Title</label>
     <input type="text" name="title" class="form-control" id="title"
