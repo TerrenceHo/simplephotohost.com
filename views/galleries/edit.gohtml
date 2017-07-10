@@ -75,7 +75,6 @@
 {{end}}
 
 {{define "galleryImages"}}
-<div class="row">
   {{range .ImagesSplitN 6}}
     <div class="col-md-2">
       {{range .}}
@@ -86,13 +85,6 @@
       {{end}}
     </div>
   {{end}}
-</div>
-<style>
-  .thumbnail {
-    width: 100%;
-    margin-bottom:6px;
-  }
-</style>
 {{end}}
 
 {{define "deleteImageForm"}}
