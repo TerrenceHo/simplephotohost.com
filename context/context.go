@@ -13,11 +13,11 @@ const (
 type privateKey string
 
 func WithUser(ctx context.Context, user *models.User) context.Context {
-	return context.WithValue(ctx, "user", user)
+	return context.WithValue(ctx, userKey, user)
 }
 
 func User(ctx context.Context) *models.User {
-	if temp := ctx.Value("user"); temp != nil {
+	if temp := ctx.Value(userKey); temp != nil {
 		if user, ok := temp.(*models.User); ok {
 			return user
 		}

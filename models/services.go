@@ -68,7 +68,7 @@ func (s *Services) Close() error {
 	return s.db.Close()
 }
 
-// DestructiveReset drops all table and rebuilds them
+// DestructiveReset drops all tables and rebuilds them
 func (s *Services) DestructiveReset() error {
 	err := s.db.DropTableIfExists(&User{}, &Gallery{}).Error
 	if err != nil {

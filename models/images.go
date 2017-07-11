@@ -9,6 +9,7 @@ import (
 	"strings"
 )
 
+// Image is NOT stored in the database
 type Image struct {
 	GalleryID uint
 	Filename  string
@@ -26,7 +27,7 @@ func (i *Image) RelativePath() string {
 }
 
 type ImageService interface {
-	Create(galleryID uint, r io.ReadCloser, filename string) error
+	Create(galleryID uint, r io.Reader, filename string) error
 	ByGalleryID(galleryID uint) ([]Image, error)
 	Delete(i *Image) error
 }
@@ -35,17 +36,14 @@ func NewImageService() ImageService {
 	return &imageService{}
 }
 
-type imageService struct {
-}
+type imageService struct{}
 
-func (is *imageService) Create(galleryID uint, r io.ReadCloser, filename string) error {
-	defer r.Close()
+func (is *imageService) Create(galleryID uint, r io.Reader, filename string) error {
 	path, err := is.mkImagePath(galleryID)
 	if err != nil {
 		return err
 	}
-
-	//Create a destination file
+	// Create a destination file
 	dst, err := os.Create(path + filename)
 	if err != nil {
 		return err

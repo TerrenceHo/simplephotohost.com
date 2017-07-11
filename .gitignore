@@ -11,3 +11,6 @@ tmp/
 exp/
 slides/
 images/**
+
+#Executables
+lenslocked.com

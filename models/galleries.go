@@ -2,11 +2,12 @@ package models
 
 import "github.com/jinzhu/gorm"
 
-// Gallery is our image container that viewers view
+// Gallery is our image container resources that visitors
+// view
 type Gallery struct {
 	gorm.Model
-	UserID uint    `gorm:"not null;index"`
-	Title  string  `gorm:"not null"`
+	UserID uint    `gorm:"not_null;index"`
+	Title  string  `gorm:"not_null"`
 	Images []Image `gorm:"-"`
 }
 
@@ -16,6 +17,14 @@ func (g *Gallery) ImagesSplitN(n int) [][]Image {
 		ret[i] = make([]Image, 0)
 	}
 	for i, img := range g.Images {
+		// % is the remainder operator in Go
+		// eg:
+		//    0%3 = 0
+		//    1%3 = 1
+		//    2%3 = 2
+		//    3%3 = 0
+		//    4%3 = 1
+		//    5%3 = 2
 		bucket := i % n
 		ret[bucket] = append(ret[bucket], img)
 	}
@@ -43,6 +52,7 @@ func NewGalleryService(db *gorm.DB) GalleryService {
 type galleryService struct {
 	GalleryDB
 }
+
 type galleryValidator struct {
 	GalleryDB
 }
@@ -67,6 +77,7 @@ func (gv *galleryValidator) Update(gallery *Gallery) error {
 	return gv.GalleryDB.Update(gallery)
 }
 
+// Delete will delete the gallery with the provided ID
 func (gv *galleryValidator) Delete(id uint) error {
 	if id <= 0 {
 		return ErrIDInvalid

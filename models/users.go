@@ -62,7 +62,7 @@ type UserService interface {
 	UserDB
 }
 
-func NewUserService(db *gorm.DB, hmacKey string, pepper string) UserService {
+func NewUserService(db *gorm.DB, pepper, hmacKey string) UserService {
 	ug := &userGorm{db}
 	hmac := hash.NewHMAC(hmacKey)
 	uv := newUserValidator(ug, hmac, pepper)

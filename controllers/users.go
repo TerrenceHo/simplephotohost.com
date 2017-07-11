@@ -92,7 +92,7 @@ func (u *Users) Login(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err {
 		case models.ErrNotFound:
-			vd.AlertError("Invalid Email Address")
+			vd.AlertError("Invalid email address")
 		default:
 			vd.SetAlert(err)
 		}

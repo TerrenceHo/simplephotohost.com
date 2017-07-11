@@ -3,7 +3,7 @@
   <div class="col-md-10 col-md-offset-1">
     <h2>Edit your gallery</h3>
     <a href="/galleries/{{.ID}}">
-      View This Gallery
+      View this gallery
     </a>
     <hr>
   </div>
@@ -89,6 +89,7 @@
     </div>
   {{end}}
 {{end}}
+
 
 {{define "deleteImageForm"}}
 <form action="/galleries/{{.GalleryID}}/images/{{.Filename | urlquery}}/delete" method="POST">

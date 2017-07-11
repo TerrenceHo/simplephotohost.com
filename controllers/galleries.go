@@ -46,13 +46,13 @@ type GalleryForm struct {
 	Title string `schema:"title"`
 }
 
-// Get /galleries
+// GET /galleries
 func (g *Galleries) Index(w http.ResponseWriter, r *http.Request) {
 	user := context.User(r.Context())
 	galleries, err := g.gs.ByUserID(user.ID)
 	if err != nil {
 		log.Println(err)
-		http.Error(w, "Something went wrong", http.StatusInternalServerError)
+		http.Error(w, "Something went wrong.", http.StatusInternalServerError)
 		return
 	}
 	var vd views.Data
@@ -60,7 +60,7 @@ func (g *Galleries) Index(w http.ResponseWriter, r *http.Request) {
 	g.IndexView.Render(w, r, vd)
 }
 
-// Get /galleries/:id
+// GET /galleries/:id
 func (g *Galleries) Show(w http.ResponseWriter, r *http.Request) {
 	gallery, err := g.galleryByID(w, r)
 	if err != nil {
@@ -71,15 +71,15 @@ func (g *Galleries) Show(w http.ResponseWriter, r *http.Request) {
 	g.ShowView.Render(w, r, vd)
 }
 
-// Get /galleries/:id/edit
+// GET /galleries/:id/edit
 func (g *Galleries) Edit(w http.ResponseWriter, r *http.Request) {
 	gallery, err := g.galleryByID(w, r)
 	if err != nil {
 		return
 	}
 	user := context.User(r.Context())
-	if gallery.ID == user.ID {
-		http.Error(w, "Gallery Not Found", http.StatusNotFound)
+	if gallery.UserID != user.ID {
+		http.Error(w, "Gallery not found", http.StatusNotFound)
 		return
 	}
 	var vd views.Data
@@ -95,7 +95,7 @@ func (g *Galleries) Update(w http.ResponseWriter, r *http.Request) {
 	}
 	user := context.User(r.Context())
 	if gallery.UserID != user.ID {
-		http.Error(w, "Gallery Not Found", http.StatusNotFound)
+		http.Error(w, "Gallery not found", http.StatusNotFound)
 		return
 	}
 	var vd views.Data
@@ -104,6 +104,7 @@ func (g *Galleries) Update(w http.ResponseWriter, r *http.Request) {
 	if err := parseForm(r, &form); err != nil {
 		vd.SetAlert(err)
 		g.EditView.Render(w, r, vd)
+		return
 	}
 	gallery.Title = form.Title
 	err = g.gs.Update(gallery)
@@ -114,11 +115,9 @@ func (g *Galleries) Update(w http.ResponseWriter, r *http.Request) {
 	}
 	vd.Alert = &views.Alert{
 		Level:   views.AlertLvlSuccess,
-		Message: "Gallery Update Successful!",
+		Message: "Gallery successfully updated!",
 	}
 	g.EditView.Render(w, r, vd)
-	fmt.Fprintln(w, gallery)
-	// g.EditView.Render(w, r, vd)
 }
 
 // POST /galleries
@@ -157,7 +156,7 @@ func (g *Galleries) ImageUpload(w http.ResponseWriter, r *http.Request) {
 	}
 	user := context.User(r.Context())
 	if gallery.UserID != user.ID {
-		http.Error(w, "Gallery Not Found", http.StatusNotFound)
+		http.Error(w, "Gallery not found", http.StatusNotFound)
 		return
 	}
 	var vd views.Data
@@ -171,7 +170,7 @@ func (g *Galleries) ImageUpload(w http.ResponseWriter, r *http.Request) {
 
 	files := r.MultipartForm.File["images"]
 	for _, f := range files {
-		// Open the upload file
+		// Open the uploaded file
 		file, err := f.Open()
 		if err != nil {
 			vd.SetAlert(err)
@@ -195,7 +194,8 @@ func (g *Galleries) ImageUpload(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, url.Path, http.StatusFound)
 }
 
-// POST /galleries/:id/images
+// POST /galleries/:id/images/:filename/delete
+//   data:
 func (g *Galleries) ImageDelete(w http.ResponseWriter, r *http.Request) {
 	gallery, err := g.galleryByID(w, r)
 	if err != nil {
@@ -203,7 +203,7 @@ func (g *Galleries) ImageDelete(w http.ResponseWriter, r *http.Request) {
 	}
 	user := context.User(r.Context())
 	if gallery.UserID != user.ID {
-		http.Error(w, "Gallery Not Found", http.StatusNotFound)
+		http.Error(w, "Gallery not found", http.StatusNotFound)
 		return
 	}
 	filename := mux.Vars(r)["filename"]
@@ -236,7 +236,7 @@ func (g *Galleries) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 	user := context.User(r.Context())
 	if gallery.UserID != user.ID {
-		http.Error(w, "Gallery Not Found", http.StatusNotFound)
+		http.Error(w, "Gallery not found", http.StatusNotFound)
 		return
 	}
 	var vd views.Data
