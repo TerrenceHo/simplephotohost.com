@@ -1,0 +1,3 @@
+journalctl -r see logs 
+systemctl restart to restart services
+
