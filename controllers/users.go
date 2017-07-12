@@ -3,9 +3,9 @@ package controllers
 import (
 	"net/http"
 
-	"lenslocked.com/models"
-	"lenslocked.com/rand"
-	"lenslocked.com/views"
+	"github.com/TerrenceHo/simplephotohost.com/models"
+	"github.com/TerrenceHo/simplephotohost.com/rand"
+	"github.com/TerrenceHo/simplephotohost.com/views"
 )
 
 // NewUsers is used to create a new Users controller.

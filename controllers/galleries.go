@@ -6,11 +6,10 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/TerrenceHo/simplephotohost.com/context"
+	"github.com/TerrenceHo/simplephotohost.com/models"
+	"github.com/TerrenceHo/simplephotohost.com/views"
 	"github.com/gorilla/mux"
-
-	"lenslocked.com/context"
-	"lenslocked.com/models"
-	"lenslocked.com/views"
 )
 
 const (

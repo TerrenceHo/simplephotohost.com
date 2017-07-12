@@ -4,9 +4,8 @@ import (
 	"regexp"
 	"strings"
 
-	"lenslocked.com/hash"
-	"lenslocked.com/rand"
-
+	"github.com/TerrenceHo/simplephotohost.com/hash"
+	"github.com/TerrenceHo/simplephotohost.com/rand"
 	"github.com/jinzhu/gorm"
 
 	"golang.org/x/crypto/bcrypt"

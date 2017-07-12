@@ -9,9 +9,8 @@ import (
 	"net/http"
 	"path/filepath"
 
+	"github.com/TerrenceHo/simplephotohost.com/context"
 	"github.com/gorilla/csrf"
-
-	"lenslocked.com/context"
 )
 
 var (
@@ -71,7 +70,7 @@ func (v *View) Render(w http.ResponseWriter, r *http.Request, data interface{}) 
 	})
 	if err := tpl.ExecuteTemplate(&buf, v.Layout, vd); err != nil {
 		log.Println(err)
-		http.Error(w, "Something went wrong. If the problem persists, please email support@lenslocked.com", http.StatusInternalServerError)
+		http.Error(w, "Something went wrong. If the problem persists, please email support@simplephotohost.com", http.StatusInternalServerError)
 		return
 	}
 	io.Copy(w, &buf)

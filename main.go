@@ -5,11 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"lenslocked.com/controllers"
-	"lenslocked.com/middleware"
-	"lenslocked.com/models"
-	"lenslocked.com/rand"
-
+	"github.com/TerrenceHo/simplephotohost.com/controllers"
+	"github.com/TerrenceHo/simplephotohost.com/middleware"
+	"github.com/TerrenceHo/simplephotohost.com/models"
+	"github.com/TerrenceHo/simplephotohost.com/rand"
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 )

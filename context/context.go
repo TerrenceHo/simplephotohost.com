@@ -3,7 +3,7 @@ package context
 import (
 	"context"
 
-	"lenslocked.com/models"
+	"github.com/TerrenceHo/simplephotohost.com/models"
 )
 
 const (
